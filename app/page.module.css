@@ -740,6 +740,120 @@
   }
 }
 
+/* ── Evolution History ── */
+.historySection {
+  width: 100%;
+  margin-top: 32px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background 0.2s ease;
+}
+
+.historyHeader:hover {
+  background: rgba(176, 108, 255, 0.05);
+}
+
+.historyToggle {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.historyEntry {
+  padding: 16px 20px;
+  border-top: 1px solid var(--glass-border);
+  transition: background 0.2s ease;
+  animation: slideIn 0.3s ease-out;
+}
+
+.historyEntry:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.historyMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.historyIndex {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent-purple);
+  font-weight: 700;
+}
+
+.historyTimestamp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.historyVision {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-style: italic;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.historyRationale {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.historyRationaleStep {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.historyCode {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  opacity: 0.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* ── Footer ── */
 .footer {
   margin-top: auto;

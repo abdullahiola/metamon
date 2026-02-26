@@ -3,6 +3,22 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./page.module.css";
 
+// ── Typewriter component ──
+function TypewriterText({ text, speed = 28 }) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, speed);
+    return () => clearInterval(id);
+  }, [text, speed]);
+  return <>{displayed}</>;
+}
+
 export default function Home() {
   const [mutations, setMutations] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -16,11 +32,36 @@ export default function Home() {
   const [isTransforming, setIsTransforming] = useState(false);
   const [isMorphed, setIsMorphed] = useState(false);
   const [isAutoEvolve, setIsAutoEvolve] = useState(false);
-  const [dreamVision, setDreamVision] = useState(""); // what Metamon is dreaming of next
+  const [dreamVision, setDreamVision] = useState("");
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const terminalBodyRef = useRef(null);
   const timerRef = useRef(null);
-  const autoEvolveRunning = useRef(false); // mutex to prevent concurrent triggers
+  const autoEvolveRunning = useRef(false);
+
+  // ── Load history from localStorage ──
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("metamonHistory");
+      if (saved) setHistory(JSON.parse(saved));
+    } catch (e) { }
+  }, []);
+
+  const addToHistory = useCallback((vision, code, rationaleSteps) => {
+    setHistory(prev => {
+      const entry = {
+        id: Date.now(),
+        vision,
+        code,
+        rationale: rationaleSteps,
+        timestamp: new Date().toLocaleString()
+      };
+      const next = [entry, ...prev].slice(0, 20); // keep last 20
+      try { localStorage.setItem("metamonHistory", JSON.stringify(next)); } catch (e) { }
+      return next;
+    });
+  }, []);
 
   // ── Load mutations ──
   const fetchMutations = useCallback(() => {
@@ -227,11 +268,18 @@ export default function Home() {
 
       const data = await res.json();
 
-      // Use mutations returned directly from API — works in production without filesystem
-      if (data.mutations && data.mutations.length) {
-        setMutations(data.mutations);
+      // Use mutations returned directly from API
+      const muts = data.mutations || [];
+      if (muts.length) {
+        setMutations(muts);
+        // Save to history when transformation completes
+        const finalCode = muts[muts.length - 1]?.code || "";
+        const rationaleSteps = muts
+          .filter(m => m.rationale)
+          .map(m => m.rationale)
+          .filter((v, i, a) => a.indexOf(v) === i);
+        addToHistory(promptToUse, finalCode, rationaleSteps);
       } else {
-        // Fallback: try to fetch from disk (dev only)
         fetchMutations();
       }
 
@@ -377,15 +425,18 @@ export default function Home() {
               NEURAL RATIONALE
             </div>
             <div className={styles.rationaleStream}>
-              {allRationales.map((r, idx) => (
-                <div
-                  key={idx}
-                  className={`${styles.rationaleStep} ${idx === allRationales.length - 1 ? styles.rationaleStepActive : ""
-                    }`}
-                >
-                  <span className={styles.rationaleIndex}>[{idx}]</span> {r}
-                </div>
-              ))}
+              {allRationales.map((r, idx) => {
+                const isActive = idx === allRationales.length - 1;
+                return (
+                  <div
+                    key={idx}
+                    className={`${styles.rationaleStep} ${isActive ? styles.rationaleStepActive : ""}`}
+                  >
+                    <span className={styles.rationaleIndex}>[{idx}]</span>{" "}
+                    {isActive ? <TypewriterText text={r} speed={22} /> : r}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -430,6 +481,40 @@ export default function Home() {
             </>
           )}
         </section>
+
+        {/* Evolution History Panel */}
+        {history.length > 0 && (
+          <section className={styles.historySection}>
+            <div className={styles.historyHeader} onClick={() => setShowHistory(h => !h)}>
+              <span className={styles.rationalePulse} />
+              <span>EVOLUTION HISTORY ({history.length})</span>
+              <span className={styles.historyToggle}>{showHistory ? "▲ collapse" : "▼ expand"}</span>
+            </div>
+            {showHistory && (
+              <div className={styles.historyList}>
+                {history.map((entry, idx) => (
+                  <div key={entry.id} className={styles.historyEntry}>
+                    <div className={styles.historyMeta}>
+                      <span className={styles.historyIndex}>#{history.length - idx}</span>
+                      <span className={styles.historyTimestamp}>{entry.timestamp}</span>
+                    </div>
+                    <div className={styles.historyVision}>&ldquo;{entry.vision}&rdquo;</div>
+                    {entry.rationale?.length > 0 && (
+                      <div className={styles.historyRationale}>
+                        {entry.rationale.map((r, i) => (
+                          <div key={i} className={styles.historyRationaleStep}>
+                            <span className={styles.rationaleIndex}>[{i}]</span> {r}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <pre className={styles.historyCode}>{entry.code.slice(0, 200)}{entry.code.length > 200 ? "..." : ""}</pre>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Footer */}
         <footer className={styles.footer}>
