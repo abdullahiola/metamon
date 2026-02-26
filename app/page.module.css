@@ -175,6 +175,54 @@
   }
 }
 
+/* ── CA Widget ── */
+.caWidget {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.caLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  letter-spacing: 0.12em;
+}
+
+.caAddress {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.caBtn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-purple);
+  background: rgba(176, 108, 255, 0.12);
+  color: var(--accent-purple);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.caBtn:hover {
+  background: rgba(176, 108, 255, 0.25);
+  box-shadow: 0 0 12px rgba(176, 108, 255, 0.2);
+}
+
 /* ── Dream Vision Banner ── */
 .dreamBanner {
   width: 100%;

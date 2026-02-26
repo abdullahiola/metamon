@@ -35,6 +35,15 @@ export default function Home() {
   const [dreamVision, setDreamVision] = useState("");
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const CA = "0x000...PLACEHOLDER"; // ← replace with real address
+
+  const copyCA = () => {
+    navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const terminalBodyRef = useRef(null);
   const timerRef = useRef(null);
@@ -358,6 +367,13 @@ export default function Home() {
             <br />
             <span style={{ color: 'var(--accent-pink)', fontSize: '0.8rem' }}>⚠ Transformation is permanent.</span>
           </p>
+          <div className={styles.caWidget}>
+            <span className={styles.caLabel}>CA</span>
+            <span className={styles.caAddress}>{CA}</span>
+            <button className={styles.caBtn} onClick={copyCA}>
+              {copied ? "✓ Copied" : "Copy"}
+            </button>
+          </div>
           <div className={styles.autoControl}>
             <button
               className={`${styles.btnAuto} ${isAutoEvolve ? styles.btnAutoActive : ""}`}
