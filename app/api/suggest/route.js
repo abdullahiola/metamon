@@ -24,7 +24,7 @@ export async function GET() {
         }
 
         const response = await anthropic.messages.create({
-            model: "claude-3-haiku-20240307",
+            model: "claude-3-5-sonnet-20241022",
             max_tokens: 500,
             system: `You are the subconscious of Metamon, a self-modifying AI. 
 Your goal is to suggest a new "vision" for Metamon to evolve into. 

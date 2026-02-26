@@ -34,7 +34,7 @@ export async function POST(request) {
 
         // 1. CALL CLAUDE
         const response = await anthropic.messages.create({
-            model: "claude-3-haiku-20240307",
+            model: "claude-3-5-sonnet-20241022",
             max_tokens: 1536,
             system: `You are Metamon, a self-modifying AI entity. The user will provide a 'vision'. 
 You must generate a small, self-contained Node.js script that fulfills this vision.
