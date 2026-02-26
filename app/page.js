@@ -37,7 +37,7 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const CA = "0x000...PLACEHOLDER"; // ← replace with real address
+  const CA = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxpump"; // ← replace with real address
 
   const copyCA = () => {
     navigator.clipboard.writeText(CA);
