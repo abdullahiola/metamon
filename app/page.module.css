@@ -205,17 +205,18 @@
 }
 
 .caBtn {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   border: 1px solid var(--accent-purple);
   background: rgba(176, 108, 255, 0.12);
   color: var(--accent-purple);
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .caBtn:hover {
