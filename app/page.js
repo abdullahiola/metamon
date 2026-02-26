@@ -59,8 +59,11 @@ export default function Home() {
   useEffect(() => {
     if (!isPlaying || mutations.length === 0) return;
 
-    const baseDelay = 120;
-    const delay = Math.max(10, baseDelay / speed);
+    const isCurrentThought = mutations[currentIndex]?.isThought;
+
+    // Thoughts display slowly so they're readable; code morphing is fast
+    const baseDelay = isCurrentThought ? 1200 : 80;
+    const delay = isCurrentThought ? baseDelay : Math.max(10, baseDelay / speed);
 
     timerRef.current = setTimeout(() => {
       setCurrentIndex((prev) => {
