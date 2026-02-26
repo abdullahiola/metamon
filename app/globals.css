@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════════
+   METAMON — Global Styles
+   Ditto-inspired cyberpunk dark theme
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg-deep: #0a0a12;
+  --bg-surface: #12121f;
+  --bg-terminal: #0d0d18;
+  --accent-purple: #b06cff;
+  --accent-purple-dim: #7c3aed;
+  --accent-pink: #e879f9;
+  --accent-green: #4ade80;
+  --accent-cyan: #22d3ee;
+  --accent-yellow: #fbbf24;
+  --text-primary: #e2e8f0;
+  --text-dim: #64748b;
+  --text-muted: #334155;
+  --glow-purple: rgba(176, 108, 255, 0.3);
+  --glow-green: rgba(74, 222, 128, 0.15);
+  --glass-bg: rgba(18, 18, 31, 0.8);
+  --glass-border: rgba(176, 108, 255, 0.15);
+  --grid-color: rgba(176, 108, 255, 0.03);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Animated grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+  animation: gridDrift 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gridDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(40px, 40px);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
