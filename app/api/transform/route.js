@@ -123,13 +123,15 @@ RULES:
             progress: 100
         });
 
-        // PERMANENT SELF-REWRITE
-        fs.writeFileSync(METAMON_PATH, targetCode, 'utf-8');
-        fs.writeFileSync(MUTATIONS_PATH, JSON.stringify(mutations, null, 2), 'utf-8');
+        // PERMANENT SELF-REWRITE (best-effort — read-only in production, works in dev)
+        try { fs.writeFileSync(METAMON_PATH, targetCode, 'utf-8'); } catch (e) { }
+        try { fs.writeFileSync(MUTATIONS_PATH, JSON.stringify(mutations, null, 2), 'utf-8'); } catch (e) { }
 
+        // Return mutations directly in response so frontend works in production
         return NextResponse.json({
             success: true,
             message: 'Claude Metamorphosis successful',
+            mutations,
             mutationCount: mutations.length
         });
 

@@ -28,8 +28,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Metamon generated files
-public/mutations.json
+# Metamon generated files (keep mutations.json committed for production)
 
 # OS
 .DS_Store

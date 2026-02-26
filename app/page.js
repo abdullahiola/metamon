@@ -16,10 +16,11 @@ export default function Home() {
   const [isTransforming, setIsTransforming] = useState(false);
   const [isMorphed, setIsMorphed] = useState(false);
   const [isAutoEvolve, setIsAutoEvolve] = useState(false);
-  const [dreaming, setDreaming] = useState(false);
+  const [dreamVision, setDreamVision] = useState(""); // what Metamon is dreaming of next
 
   const terminalBodyRef = useRef(null);
   const timerRef = useRef(null);
+  const autoEvolveRunning = useRef(false); // mutex to prevent concurrent triggers
 
   // ── Load mutations ──
   const fetchMutations = useCallback(() => {
@@ -29,10 +30,7 @@ export default function Home() {
         return res.json();
       })
       .then((data) => {
-        if (!data.length) {
-          setError("Metamon has not been initialized.");
-          return;
-        }
+        if (!data.length) return; // empty file, stay in fresh state
         setMutations(data);
 
         // Detect if already morphed
@@ -47,10 +45,9 @@ export default function Home() {
         setError(null);
       })
       .catch(() => {
-        setError(
-          "No mutations.json found. Run node metamon.js first to generate it."
-        );
-        setStatus({ state: "idle", text: "No data" });
+        // No mutations.json in production — that's fine, show fresh state
+        setStatus({ state: "idle", text: "Ready for metamorphosis" });
+        setError(null);
       });
   }, []);
 
@@ -225,8 +222,16 @@ export default function Home() {
 
       if (!res.ok) throw new Error("Transformation failed");
 
-      // Successful API call - start the one-way animation
-      fetchMutations();
+      const data = await res.json();
+
+      // Use mutations returned directly from API — works in production without filesystem
+      if (data.mutations && data.mutations.length) {
+        setMutations(data.mutations);
+      } else {
+        // Fallback: try to fetch from disk (dev only)
+        fetchMutations();
+      }
+
       setCurrentIndex(0);
       setShowComplete(false);
       setIsPlaying(true);
@@ -243,41 +248,45 @@ export default function Home() {
 
   // ── Auto-Evolution Loop ──
   useEffect(() => {
+    // Only trigger when: auto mode on, animation done, not already running a loop iteration
     if (!isAutoEvolve || isPlaying || isTransforming) return;
+    if (status.state !== "complete") return;
+    if (autoEvolveRunning.current) return; // mutex guard
 
-    // If we just finished a metamorphosis
-    if (status.state === "complete" || (isMorphed && !isPlaying)) {
-      const triggerNext = async () => {
-        setDreaming(true);
-        setStatus({ state: "idle", text: "Metamon is dreaming..." });
+    autoEvolveRunning.current = true;
 
-        // Wait for a bit to let the user see the result
-        await new Promise(r => setTimeout(r, 5000));
+    const triggerNext = async () => {
+      try {
+        setStatus({ state: "idle", text: "Dreaming of next form…" });
 
-        if (!isAutoEvolve) {
-          setDreaming(false);
-          return;
-        }
+        // Show dream pause — let user see the completed state
+        await new Promise(r => setTimeout(r, 4000));
+        if (!isAutoEvolve) return;
 
-        try {
-          const res = await fetch("/api/suggest");
-          const data = await res.json();
-          if (data.vision) {
-            setUserInput(`Dreaming: ${data.vision}`);
-            await new Promise(r => setTimeout(r, 2000));
-            initiateMetamorphosis(data.vision);
-          }
-        } catch (e) {
-          console.error("Suggestion failed", e);
-          setIsAutoEvolve(false);
-        } finally {
-          setDreaming(false);
-        }
-      };
+        // Fetch a new vision from the AI
+        setStatus({ state: "idle", text: "Asking itself a question…" });
+        const res = await fetch("/api/suggest");
+        const data = await res.json();
 
-      triggerNext();
-    }
-  }, [isAutoEvolve, isPlaying, isTransforming, status.state, isMorphed]);
+        if (!data.vision || !isAutoEvolve) return;
+
+        // Show what Metamon is dreaming of for 2s before acting
+        setDreamVision(data.vision);
+        await new Promise(r => setTimeout(r, 2500));
+        if (!isAutoEvolve) return;
+
+        setDreamVision("");
+        await initiateMetamorphosis(data.vision);
+      } catch (e) {
+        console.error("Auto-evolve error:", e);
+        setIsAutoEvolve(false);
+      } finally {
+        autoEvolveRunning.current = false;
+      }
+    };
+
+    triggerNext();
+  }, [isAutoEvolve, isPlaying, isTransforming, status.state]);
 
   return (
     <>
@@ -348,6 +357,15 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Dream Vision Banner */}
+        {dreamVision && (
+          <div className={styles.dreamBanner}>
+            <span className={styles.rationalePulse} />
+            <span className={styles.dreamLabel}>METAMON ASKS ITSELF:</span>
+            <span className={styles.dreamText}>&ldquo;{dreamVision}&rdquo;</span>
+          </div>
+        )}
+
         {/* Neural Rationale */}
         {(isPlaying || isMorphed) && allRationales.length > 0 && (
           <div className={styles.rationaleBox}>
@@ -386,37 +404,29 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Input Section */}
-        {!isMorphed && (
-          <section className={styles.inputSection}>
-            <h2><span className={styles.emptyIcon} style={{ fontSize: '1.2rem', animation: 'none' }}>⟡</span> Divine Metamorphosis</h2>
-            <p>What should Metamon become? Describe your vision below.</p>
-            <textarea
-              className={styles.codeTextArea}
-              placeholder="e.g. A digital clock, The Matrix, A greeting..."
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              disabled={isTransforming || isPlaying}
-            />
-            <button
-              className={styles.btnInitiate}
-              onClick={initiateMetamorphosis}
-              disabled={!userInput.trim() || isTransforming || isPlaying}
-            >
-              {isTransforming ? <><span className={styles.loader}></span> Transmitting...</> : "Initiate Metamorphosis"}
-            </button>
-          </section>
-        )}
-
-        {isMorphed && !isPlaying && (
-          <section className={styles.inputSection} style={{ textAlign: 'center', borderColor: 'var(--accent-green)' }}>
-            <h2 style={{ color: 'var(--accent-green)', justifyContent: 'center' }}>✓ Entity Reborn</h2>
-            <p>Metamon has successfully completed its evolution. The original logic is no more.</p>
-            <div style={{ marginTop: '10px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Metamorphosis logic has self-destructed.
-            </div>
-          </section>
-        )}
+        {/* Input Section — always visible unless auto-evolve is running */}
+        <section className={styles.inputSection}>
+          <h2><span className={styles.emptyIcon} style={{ fontSize: '1.2rem', animation: 'none' }}>⟡</span> Divine Metamorphosis</h2>
+          <p>{isAutoEvolve ? "Autonomous mode is active. Metamon evolves on its own." : "What should Metamon become? Describe your vision below."}</p>
+          {!isAutoEvolve && (
+            <>
+              <textarea
+                className={styles.codeTextArea}
+                placeholder="e.g. A digital clock, The Matrix, A greeting..."
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                disabled={isTransforming || isPlaying}
+              />
+              <button
+                className={styles.btnInitiate}
+                onClick={() => initiateMetamorphosis()}
+                disabled={!userInput.trim() || isTransforming || isPlaying}
+              >
+                {isTransforming ? <><span className={styles.loader}></span> Transmitting...</> : "Initiate Metamorphosis"}
+              </button>
+            </>
+          )}
+        </section>
 
         {/* Footer */}
         <footer className={styles.footer}>

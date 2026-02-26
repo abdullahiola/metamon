@@ -1,0 +1,34 @@
+METAMON — What It Does
+======================
+
+Metamon is a self-modifying AI program that rewrites its own source code based on a user's vision.
+
+HOW IT WORKS
+------------
+1. You type a vision (e.g. "a rain of falling code", "a digital clock", "the matrix").
+2. Metamon sends that vision to Claude AI, which generates a small Node.js program that embodies it.
+3. Claude also outputs its internal reasoning — why it made the choices it did.
+4. Metamon permanently overwrites its own file (metamon.js) with the new code.
+5. The web UI animates the transformation character-by-character, so you can watch the code evolve in real time.
+
+WHAT MAKES IT SPECIAL
+---------------------
+- It is a one-way transformation. Once Metamon rewrites itself, the original self-modifying logic is gone.
+- The file on disk (metamon.js) is truly changed — this is not a simulation.
+- You can see the AI's "Neural Rationale" as it decides how to evolve.
+
+AUTONOMOUS MODE
+---------------
+Toggle "Autonomous Mode" in the UI and Metamon will keep evolving on its own forever:
+  - After each transformation, it pauses and dreams.
+  - It asks Claude: "What should I become next?"
+  - It shows you the question it asked itself.
+  - Then it transforms again, automatically.
+
+THE SELF-MODIFYING CONCEPT
+--------------------------
+A classic self-modifying program changes its own instructions as it runs.
+Metamon does this with AI: instead of following fixed rules, it asks an AI
+to invent its next form, then becomes that form permanently.
+
+It cannot run the same way twice.

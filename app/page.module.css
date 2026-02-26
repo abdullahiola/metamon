@@ -175,6 +175,39 @@
   }
 }
 
+/* ── Dream Vision Banner ── */
+.dreamBanner {
+  width: 100%;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(176, 108, 255, 0.06);
+  border: 1px solid rgba(176, 108, 255, 0.25);
+  border-radius: 8px;
+  animation: slideIn 0.5s ease-out;
+}
+
+.dreamLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.dreamText {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-style: italic;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
 /* ── Status Badge ── */
 .statusBadge {
   display: inline-flex;
