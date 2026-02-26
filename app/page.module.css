@@ -500,6 +500,36 @@
   margin-right: 4px;
 }
 
+.redactedBar {
+  display: inline-block;
+  height: 10px;
+  width: 160px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.redactedBarActive {
+  width: 200px;
+  background: rgba(176, 108, 255, 0.25);
+  box-shadow: 0 0 8px rgba(176, 108, 255, 0.3);
+  animation: redactedPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes redactedPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    width: 200px;
+  }
+
+  50% {
+    opacity: 0.6;
+    width: 180px;
+  }
+}
+
 /* ── Empty State ── */
 .emptyState {
   display: flex;

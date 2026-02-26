@@ -453,13 +453,14 @@ export default function Home() {
                     className={`${styles.rationaleStep} ${isActive ? styles.rationaleStepActive : ""}`}
                   >
                     <span className={styles.rationaleIndex}>[{idx}]</span>{" "}
-                    {isActive ? <TypewriterText text={r} speed={22} /> : r}
+                    <span className={`${styles.redactedBar} ${isActive ? styles.redactedBarActive : ""}`} />
                   </div>
                 );
               })}
             </div>
           </div>
         )}
+
 
         {/* Progress */}
         <div className={styles.progressSection}>
